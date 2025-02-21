@@ -10,7 +10,7 @@ import SessionActions from './actions/SessionActions';
 
 const Application: React.FC = () => {
   const dispatch = useDispatch();
-  const { isLoggedIn } = useSession();
+  const { isLoggedIn, enableExamMode } = useSession();
 
   // Used in the mobile/PWA experience (e.g. separate handling of orientation changes on Andriod & iOS due to unique browser behaviours)
   const isMobile = /iPhone|iPad|Android/.test(navigator.userAgent);
@@ -30,6 +30,18 @@ const Application: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Effect to block right click context menu, F12 and Ctrl+Shift+I shortcuts to open dev tools
+  React.useEffect(() => {
+    if (enableExamMode) {
+      document.addEventListener('contextmenu', event => event.preventDefault());
+      document.addEventListener('keydown', event => {
+        if (event.key == "F12" || (event.key == "I" && event.ctrlKey && event.shiftKey)) {
+          event.preventDefault();
+        }
+      })
+    }
+  }, [enableExamMode]);
 
   /**
    * The following effect prevents the mobile browser interface from hiding on scroll by setting the

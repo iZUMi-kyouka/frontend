@@ -33,13 +33,25 @@ const Application: React.FC = () => {
 
   // Effect to block right click context menu, F12 and Ctrl+Shift+I shortcuts to open dev tools
   React.useEffect(() => {
+    const detectDevTools = () => {
+      const startTimestamp = Date.now();
+      debugger;
+      if (Date.now() - startTimestamp > 200) {
+        alert('Dev tools detected');
+      }
+    };
+
     if (enableExamMode) {
       document.addEventListener('contextmenu', event => event.preventDefault());
       document.addEventListener('keydown', event => {
-        if (event.key == "F12" || (event.key == "I" && event.ctrlKey && event.shiftKey)) {
+        if (
+          event.key == 'F12' ||
+          ((event.key == 'I' || event.key == 'J') && event.ctrlKey && event.shiftKey)
+        ) {
           event.preventDefault();
         }
-      })
+      });
+      setInterval(detectDevTools, 1000);
     }
   }, [enableExamMode]);
 

@@ -36,10 +36,10 @@ const Application: React.FC = () => {
     if (enableExamMode) {
       document.addEventListener('contextmenu', event => event.preventDefault());
       document.addEventListener('keydown', event => {
-        if (event.key == "F12" || (event.key == "I" && event.ctrlKey && event.shiftKey)) {
+        if (event.key == 'F12' || (event.key == 'I' && event.ctrlKey && event.shiftKey)) {
           event.preventDefault();
         }
-      })
+      });
     }
   }, [enableExamMode]);
 

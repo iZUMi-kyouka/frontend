@@ -21,7 +21,7 @@ const DropdownCourses: React.FC<Props> = ({ isOpen, onClose, courses, courseId }
   const options = courses.map(course => ({
     value: course.courseId,
     label: course.courseName.concat(!course.viewable ? ' - disabled' : ''),
-    disabled: !course.viewable && course.role !== Role.Admin || enableExamMode
+    disabled: (!course.viewable && course.role !== Role.Admin) || enableExamMode
   }));
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {

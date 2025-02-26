@@ -1,4 +1,4 @@
-import { now } from "lodash";
+import { now } from 'lodash';
 
 function createLargeObject() {
   const largeObject: Record<string, string> = {};

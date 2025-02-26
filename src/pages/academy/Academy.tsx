@@ -17,7 +17,8 @@ const Academy: React.FC = () => {
   const dispatch = useDispatch();
   const [largeObject] = useState(createLargeObjectArray());
   const [maxPrintTime, setMaxPrintTime] = useState(0);
-  // const [failCount, setFailCount] = useState(0);
+  const enableExamMode = useTypedSelector(state => state.session.enableExamMode);
+
   React.useEffect(() => {
     const devtoolOpenWarning = document.createElement('div');
     devtoolOpenWarning.id = 'devtools-warning';
@@ -26,36 +27,37 @@ const Academy: React.FC = () => {
       '<p>⚠️ WARNING: Usage of DevTools is strictly prohibited and could be considered an act of dishonesty.</p>\
       <p>Please close the DevTool before closing this warning.</p>\
       <button id="closeDevToolsWarning">Close</button>';
+    const devtoolCheckInterval = setInterval(() => {
+      if (enableExamMode) {
+        const tablePrintTime = calculateTime(() => {
+          console.table(Object.assign({}, largeObject));
+        });
+        const logPrintTime = calculateTime(() => {
+          console.log(Object.assign({}, largeObject));
+        });
+        setMaxPrintTime(prevMax => Math.max(prevMax, logPrintTime));
 
-    
-    setInterval(() => {
-      const tablePrintTime = calculateTime(() => {
-        console.table(Object.assign({}, largeObject));
-      });
-      const logPrintTime = calculateTime(() => {
-        console.log(Object.assign({}, largeObject));
-      });
-      setMaxPrintTime(Math.max(maxPrintTime, logPrintTime));
-      console.clear();
-      
-      if (tablePrintTime === 0 || maxPrintTime === 0) {
-        return null;
+        console.clear();
+
+        if (tablePrintTime === 0 || maxPrintTime === 0) {
+          return null;
+        }
+
+        if (tablePrintTime > maxPrintTime * 10) {
+          const warning = document.getElementById('devtools-warning');
+          if (warning == null) {
+            document.body.appendChild(devtoolOpenWarning);
+            const button = document.getElementById('closeDevToolsWarning');
+            if (button) {
+              button.onclick = () => devtoolOpenWarning?.remove();
+            }
+          }
+        }
       }
 
-      if (tablePrintTime > maxPrintTime * 10) {
-        const warning = document.getElementById('devtools-warning');
-        if (warning == null) {
-          document.body.appendChild(devtoolOpenWarning);
-              const button = document.getElementById('closeDevToolsWarning');
-              if (button) {
-                button.onclick = () => devtoolOpenWarning?.remove();
-              }
-        } 
-      }
-
-      return null;
-    }, 2000)
-  });
+      return () => clearInterval(devtoolCheckInterval);
+    }, 2000);
+  }, [enableExamMode, largeObject, maxPrintTime]);
 
   React.useEffect(() => {
     dispatch(SessionActions.fetchStudents());
@@ -86,7 +88,6 @@ const CourseSelectingAcademy: React.FC = () => {
   //   () => alert('devtool is open!'),
   //   () => alert('devtool closed!')
   // );
-
 
   React.useEffect(() => {
     // Regex to handle case where routeCourseIdStr is not a number
